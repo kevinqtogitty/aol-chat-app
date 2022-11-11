@@ -3,7 +3,6 @@
   "version": "1.0.0",
   "main": "index.js",
   "license": "MIT",
-  "type": "module",
   "scripts": {
     "dev:server": "nodemon --watch './**/*.ts' --exec 'ts-node-esm' server.ts"
   },
