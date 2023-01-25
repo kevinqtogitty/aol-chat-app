@@ -74,19 +74,24 @@ const Chat: React.FC<ChatProps> = ({
   };
 
   const sendMessage = async () => {
-    if (message !== '') {
-      const messageData = {
-        roomName: roomName,
-        roomID: roomID,
-        username: username,
-        message: message,
-        time:
-          new Date(Date.now()).getHours() +
-          ':' +
-          new Date(Date.now()).getMinutes()
-      };
-      await socket.emit('send_message', messageData);
-      setChatThread((chatThread) => [...chatThread, messageData]);
+    try {
+      if (message !== '') {
+        const messageData = {
+          roomName: roomName,
+          roomID: roomID,
+          username: username,
+          message: message,
+          time:
+            new Date(Date.now()).getHours() +
+            ':' +
+            new Date(Date.now()).getMinutes()
+        };
+        await socket.emit('send_message', messageData);
+        setChatThread((chatThread) => [...chatThread, messageData]);
+        setMessage('');
+      }
+    } catch (error) {
+      console.log(error);
     }
   };
 
@@ -104,27 +109,15 @@ const Chat: React.FC<ChatProps> = ({
         <MessagesBody className="window-body">
           {chatThread.map((message) =>
             message.username === username ? (
-              <span
-                style={{
-                  display: 'flex',
-                  columnGap: '.3rem',
-                  fontSize: '.8rem'
-                }}
-              >
+              <UserName>
                 <YourMessage>{message.username}:</YourMessage>
                 {message.message}
-              </span>
+              </UserName>
             ) : (
-              <span
-                style={{
-                  display: 'flex',
-                  columnGap: '.3rem',
-                  fontSize: '.8rem'
-                }}
-              >
+              <UserName>
                 <OtherMessage>{message.username}:</OtherMessage>
                 {message.message}
-              </span>
+              </UserName>
             )
           )}
         </MessagesBody>
@@ -133,6 +126,7 @@ const Chat: React.FC<ChatProps> = ({
             placeholder="Type your message here..."
             type="text"
             onChange={(e) => setMessage(e.target.value)}
+            value={message}
           />
 
           <SendMessageButton onClick={sendMessage}>
@@ -176,4 +170,10 @@ const YourMessage = styled.p`
 `;
 const OtherMessage = styled(YourMessage)`
   color: blue;
+`;
+
+const UserName = styled.span`
+  display: flex;
+  column-gap: 0.3rem;
+  font-size: 0.8rem;
 `;
