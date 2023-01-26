@@ -32,11 +32,15 @@ function App() {
   const leaveRoom = async (
     setJoinedRoom?: Dispatch<SetStateAction<boolean>>
   ) => {
-    socket.emit('leave_room', { username: username, roomID: roomID });
-    if (setJoinedRoom) {
-      setJoinedRoom((state) => !state);
+    try {
+      socket.emit('leave_room', { username: username, roomID: roomID });
+      if (setJoinedRoom) {
+        setJoinedRoom((state) => !state);
+      }
+      setShowChat(false);
+    } catch (error) {
+      console.log(error);
     }
-    setShowChat(false);
   };
 
   return (
