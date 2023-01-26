@@ -1,4 +1,5 @@
 import React, { Dispatch, SetStateAction, useRef, useState } from 'react';
+import { useForm } from 'react-hook-form';
 import styled from 'styled-components';
 import 'xp.css';
 import { Input, SendMessageButton } from '../App';
@@ -30,6 +31,22 @@ const SignOnWindow: React.FC<SignInWindowProps> = ({
 }) => {
   const [toggle, setToggle] = useState(false);
   const [joinedRoom, setJoinedRoom] = useState(false);
+
+  const {
+    register,
+    handleSubmit,
+    watch,
+    formState: { errors }
+  } = useForm({
+    defaultValues: {
+      username: '',
+      roomId: '',
+      roomName: ''
+    }
+  });
+  const onSubmit = (data: any) => {
+    handleJoinRoom();
+  };
 
   const handleJoinRoom = async () => {
     joinRoom();
@@ -67,26 +84,34 @@ const SignOnWindow: React.FC<SignInWindowProps> = ({
               <Input
                 id="username"
                 type="text"
-                name="username"
+                {...register('username', {
+                  required: true,
+                  minLength: { value: 5, message: 'Minimum 5 characters' },
+                  maxLength: { value: 20, message: 'Maximum 20 characters' }
+                })}
                 placeholder="Username..."
-                required
                 value={username}
                 onChange={(e) => setUsername(e.target.value)}
               />
+              <span> {errors.username?.message}</span>
             </div>
-            <form id="form">
+            <form id="form" onSubmit={handleSubmit((data) => onSubmit(data))}>
               {toggle ? (
                 <>
                   <span>Room ID </span>
                   <Input
                     id="roomID"
                     type="text"
-                    name="roomID"
+                    {...register('roomId', {
+                      required: true,
+                      minLength: { value: 3, message: 'Minimum 3 characters' },
+                      maxLength: { value: 15, message: 'Maximum 15 characters' }
+                    })}
                     placeholder="123123"
-                    required
                     value={roomID}
                     onChange={(e) => setRoomID(e.target.value)}
                   />
+                  <span> {errors.roomId?.message}</span>
                 </>
               ) : (
                 <>
@@ -94,24 +119,32 @@ const SignOnWindow: React.FC<SignInWindowProps> = ({
                   <Input
                     id="roomName"
                     type="text"
-                    name="roomName"
+                    {...register('roomName', {
+                      required: true,
+                      minLength: { value: 5, message: 'Minimum 5 characters' },
+                      maxLength: { value: 30, message: 'Maximum 30 characters' }
+                    })}
                     placeholder="Davids Hotdog chat"
-                    required
                     value={roomName}
                     onChange={(e) => setRoomName(e.target.value)}
                   />
+                  <span> {errors.roomName?.message}</span>
                   <br />
                   <br />
                   <span>Room ID </span>
                   <Input
                     id="roomID"
                     type="text"
-                    name="roomID"
+                    {...register('roomId', {
+                      required: true,
+                      minLength: { value: 3, message: 'Minimum 3 characters' },
+                      maxLength: { value: 15, message: 'Maximum 15 characters' }
+                    })}
                     placeholder="123123"
-                    required
                     value={roomID}
                     onChange={(e) => setRoomID(e.target.value)}
                   />
+                  <span> {errors.roomId?.message}</span>
                 </>
               )}
             </form>
@@ -121,11 +154,9 @@ const SignOnWindow: React.FC<SignInWindowProps> = ({
             {toggle ? `Create a room` : `Join a room`}
           </ToggleOption>
           {toggle ? (
-            <JoinRoomButton onClick={handleJoinRoom}>Join Room</JoinRoomButton>
+            <JoinRoomButton form="form">Join Room</JoinRoomButton>
           ) : (
-            <CreateRoomButton onClick={handleJoinRoom}>
-              Create Room
-            </CreateRoomButton>
+            <CreateRoomButton form="form">Create Room</CreateRoomButton>
           )}
         </WindowBody>
       )}
